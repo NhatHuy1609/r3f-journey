@@ -1,0 +1,40 @@
+React Three Fiber - Day 1 Summary
+### Setup & Introduction
+Created a React Three Fiber project using Next.js with TypeScript
+Installed necessary packages: three, @react-three/fiber, @react-three/drei, and TypeScript types
+Set up client-side rendering using a ClientOnly wrapper component
+
+### Basic Concepts
+Reviewed Three.js fundamentals (Scene, Camera, Renderer, Meshes, Materials)
+Learned about the declarative approach of React Three Fiber vs. imperative Three.js
+Created a simple interactive 3D scene with a rotating cube
+
+### Key Components
+Canvas: The container for 3D content
+mesh: Basic 3D object component
+Geometry components: boxGeometry, etc.
+Material components: meshStandardMaterial, meshPhongMaterial
+
+### Lighting
+## Added different types of lights to understand their roles:
+ambientLight: General scene illumination
+directionalLight: Sun-like directional lighting with shadows
+spotLight: Focused cone of light for highlights
+
+### Scene Enhancement
+Added a floor plane to better visualize lighting and shadows
+Implemented a Grid helper for spatial reference
+Set custom camera positioning and background color
+Set up shadow casting and receiving
+
+### Interactivity
+##Used React hooks with R3F:
+useRef to reference and manipulate mesh objects
+useState for hover and click states
+useFrame for animations
+
+### Implemented basic pointer events (onClick, onPointerOver, onPointerOut)
+
+### Next Steps
+#Moving forward with the React Three Fiber roadmap
+#Exploring more complex geometries, materials, and interactions
