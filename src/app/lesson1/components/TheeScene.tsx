@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 
-import { Mesh } from 'three'
+import { Mesh, AxesHelper, Light, DirectionalLight } from 'three'
 import { Canvas } from '@react-three/fiber'
 import { Grid, OrbitControls, Stats } from '@react-three/drei'
-import { useRef, useState } from 'react'
 
 interface BoxProps {
   position?: [number, number, number]
@@ -31,6 +30,15 @@ function Box({ position = [0, 0, 0], color = 'orange' }: BoxProps) {
   )
 }
 
+function Sphere({ position = [0, 0, 0], color = 'blue' }: { position?: [number, number, number]; color?: string }) {
+  return (
+    <mesh position={position} castShadow>
+      <sphereGeometry args={[1, 32, 32]} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  )
+}
+
 function Floor() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]} receiveShadow>
@@ -40,7 +48,24 @@ function Floor() {
   )
 }
 
+function Axes() {
+  const axesRef = useRef<AxesHelper>(null)
+  return <primitive ref={axesRef} object={new AxesHelper(5)} />
+}
+
 export default function ThreeScene() {
+  const lightRef = useRef<DirectionalLight>(null)
+  const [shadowMapSize, setShadowMapSize] = useState(1024)
+
+  useEffect(() => {
+    if (lightRef.current) {
+      const light = lightRef.current
+      light.shadow.mapSize.set(shadowMapSize, shadowMapSize) // Update size
+      light.shadow.map = null // Dispose old map
+      light.shadow.needsUpdate = true // Force re-render
+    }
+  }, [shadowMapSize])
+
   return (
     <div className='w-full h-[500px]'>
       <Canvas shadows camera={{ position: [3, 3, 3], fov: 60 }}>
@@ -48,23 +73,40 @@ export default function ThreeScene() {
         <color attach='background' args={['#202030']} />
 
         {/* Lights */}
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[5, 5, 5]} intensity={1} castShadow shadow-mapSize={1024} />
-        <spotLight position={[-5, -5, -5]} angle={0.15} penumbra={1} intensity={0.5} castShadow />
+        <ambientLight intensity={0.5} />
+        <directionalLight
+          ref={lightRef}
+          position={[5, 5, 5]}
+          intensity={8}
+          castShadow
+          shadow-mapSize={1024}
+          // shadow-camera-near={0.1}
+          // shadow-camera-far={20}
+          // shadow-camera-left={-5}
+          // shadow-camera-right={5}
+          // shadow-camera-top={5}
+          // shadow-camera-bottom={-5}
+        />
+        {/* <spotLight position={[-5, -5, -5]} angle={0.15} penumbra={1} intensity={0.5} castShadow /> */}
 
         {/* Objects */}
-        <Box position={[0, 0, 0.5]} />
+        {/* <Box position={[0, 0, 0.5]} /> */}
+        <Sphere position={[0, 0, 0]} />
         <Floor />
 
         {/* Grid helper */}
-        <Grid infiniteGrid cellSize={1} cellThickness={0.6} sectionSize={3} sectionThickness={1.5} />
+        <Grid infiniteGrid cellSize={1} cellThickness={0.4} sectionSize={3} sectionThickness={0.1} />
 
         {/* Controls */}
         <OrbitControls />
 
+        {/* Axes */}
+        <Axes />
+
         {/* Stats */}
         <Stats />
       </Canvas>
+      <button onClick={() => setShadowMapSize(512)}>Click me to change</button>
     </div>
   )
 }
